@@ -15,15 +15,20 @@
     <!-- configuration -->
     <script src="./js/config.js"></script>
 
-    <script src="./js/chatroom.js"></script>
+    <script src="./js/sign.js"></script>
   </head>
 
-  <body onload="init();">
+  <body>
     <div>
-      <h2>Chatroom</h2>
-      <p id="name"></p>
-      <p id="email"></p>
-      <button onclick="createChatroom();">Add Private Chatroom</button>
+      <h2>Sign Up</h2>
+      <label>Nick Name</label><br>
+      <input type="text" id="name" name="name"><br><br>
+      <label>E-mail</label><br>
+      <input type="text" id="email" name="email"><br><br>
+      <label>Password</label><br>
+      <input type="text" id="password" name="password"><br><br>
+      <button onclick="writeUserData();">Sign up</button><br>
+      <a href="./sign_in.html">Sign in</a>
     </div>
 
   </body>
