@@ -1,15 +1,15 @@
 function writeUserData() {
-  var name = document.getElementById("name").value;
-  var email = document.getElementById("email").value;
-  var password = document.getElementById("password").value;
+  var name = $("#name");
+  var email = $("#email");
+  var password = $("#password");
 
-  firebase.auth().createUserWithEmailAndPassword(email,password).then(() => {
+  firebase.auth().createUserWithEmailAndPassword(email.val(), password.val()).then(() => {
     firebase.auth().currentUser.updateProfile({
-      displayName: name
+      displayName: name.val()
     });
-    firebase.database().ref('users/' + name).set({
-      email: email,
-      password : password
+    firebase.database().ref('users/' + name.val()).set({
+      email: email.val(),
+      password: password.val()
     }).then(() => { 
       alert("Successfully Signed Up!");
       window.location.href = "./sign_in.html";
@@ -22,10 +22,10 @@ function writeUserData() {
 }
 
 function SignIn() {
-  var email = document.getElementById("email").value;
-  var password = document.getElementById("password").value;
+  var email = $("#email");
+  var password = $("#password");
 
-  firebase.auth().signInWithEmailAndPassword(email, password).then(() => {
+  firebase.auth().signInWithEmailAndPassword(email.val(), password.val()).then(() => {
     alert("Successfully Signed In!");
     window.location.href = "./index.html";
   }).catch(error => { 

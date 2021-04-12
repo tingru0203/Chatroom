@@ -12,6 +12,9 @@
     <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-functions.js"></script>
 
+    <!-- jQuery -->
+    <script src="http://code.jquery.com/jquery-3.3.1.js" type="text/javascript"></script>
+
     <!-- configuration -->
     <script src="./js/config.js"></script>
 
@@ -19,11 +22,23 @@
   </head>
 
   <body onload="init();">
-    <div>
-      <h2>Chatroom</h2>
+    <h2>Chatroom</h2>
+    <div id="left">
       <p id="name"></p>
       <p id="email"></p>
-      <button onclick="createChatroom();">Add Private Chatroom</button>
+      <button onclick="createChatroom();">Create Private Chatroom</button>
+      <p>My Chatroom</p>
+      <div id="mychatroom"></div>
+    </div>
+
+    <div id="right">
+      <p>Room</p>
+      <div id="roomname"></div>
+      <button onclick="addNewMember();">Add New Member</button>
+      <p>content</p>
+      <div id="content"></div>
+      <input id="message">
+      <button onclick="sendMessage();">send</button>
     </div>
 
   </body>
