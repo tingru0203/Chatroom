@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chatroom</title>
 
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="./css/sign.css">
+
     <!-- Firebase App is always required and must be first -->
     <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-auth.js"></script>
@@ -27,9 +30,9 @@
       <label>E-mail</label><br>
       <input type="text" id="email" name="email"><br><br>
       <label>Password</label><br>
-      <input type="text" id="password" name="password"><br><br>
+      <input type="password" id="password" name="password"><br><br>
       <button onclick="SignIn();">Sign in</button>
-      <a href="">Sign in with Google</a><br>
+      <button onclick="SignInWithGoogle();">Sign in with Google</button><br>
       <label>Don't have an account yet?</label><a href="./sign_up.html">Sign up</a>
     </div>
 

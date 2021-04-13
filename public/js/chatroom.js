@@ -2,12 +2,8 @@ let cur_room;
 
 function init() {
   firebase.auth().onAuthStateChanged((user) => {
+    var menu = $('#dynamic-menu');
     if (user) {
-      /*$("#roombtn").click(function(){ 
-        console.log("room click");
-        chooseChatroom(n); 
-      });*/
-
       var name = $("#name");
       var email = $("#email");
       name.html(user.displayName);
@@ -17,14 +13,28 @@ function init() {
       firebase.database().ref('users/' + name.html()).once('value', snapshot => {
         for(var n in snapshot.val()){
           if(n != "email" && n != "password") {
-            mychatroom.append('<button onclick="chooseChatroom(\''+n+'\');">'+ n +'</button><br>');
+            mychatroom.append('<button onclick="chooseChatroom(\''+n+'\');">'+ n +'</button>');
             //mychatroom.append('<button id="roombtn">' + n +'</button><br>');
           }
             //mychatroom.append(`<button onclick="chooseChatroom(${n});">`+ n +'</button><br>');
         }
       });
+
+      //logout
+      menu.html("<span class='dropdown-item' id='logout-btn'>Sign Out</span>");
+            var logout = document.getElementById("logout-btn");
+            logout.addEventListener('click', function() {
+                firebase.auth().signOut().then(function() {
+                    alert("Logouted Successfully!");
+                }).catch(error => { 
+                    alert(error.message); 
+                });
+            });
     } else {
-        // No user is signed in.
+      menu.html("<a class='dropdown-item' href='./sign_in.html'>Sign In</a>");
+      $('#left').html("");
+      $('#right').html("");
+      // do something else
     }
   });
 }
@@ -42,7 +52,8 @@ function createChatroom() {
     start: 0,
   });
 
-  mychatroom.append('<button id="roombtn">' + room_name +'</button><br>');
+  //mychatroom.append('<button id="roombtn">' + room_name +'</button><br>');
+  mychatroom.append('<button onclick="chooseChatroom(\''+room_name+'\');">'+ room_name +'</button>');
   //$("#roombtn").addEventListener("click", function(){ chooseChatroom(room_name); });
 }
 
@@ -52,12 +63,23 @@ function chooseChatroom(n) {
   var database = firebase.database().ref('content/' + n);
   var content = $("#content");
   var roomname = $("#roomname");
+  var hide = $(".hide");
+  var name = $("#name");
   roomname.html(cur_room);
+  hide.css("visibility", "visible");
   database.on('value', snapshot => {
     content.html("");
     for(var i in snapshot.val()){
-      if(i != "start")
-        content.append('<span>'+snapshot.val()[i].name+':'+snapshot.val()[i].message+'</span><br>');
+      if(i != "start") {
+        if(snapshot.val()[i].name == name.html()) {
+          content.append('<div class="me_name">'+snapshot.val()[i].name+'</div>');
+          content.append('<div class="me">'+snapshot.val()[i].message+'</div>');
+        }
+        else {
+          content.append('<div class="other_name">'+snapshot.val()[i].name+'</div>');
+          content.append('<div class="other">'+snapshot.val()[i].message+'</div>');
+        }
+      }
     }
   });
 }

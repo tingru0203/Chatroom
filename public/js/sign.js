@@ -13,11 +13,11 @@ function writeUserData() {
     }).then(() => { 
       alert("Successfully Signed Up!");
       window.location.href = "./sign_in.html";
-    }).catch(
-      error => { alert(error.message); 
+    }).catch(error => { 
+      alert(error.message); 
     });
-  }).catch(
-    error => { alert(error.message); 
+  }).catch(error => { 
+    alert(error.message); 
   });
 }
 
@@ -33,5 +33,13 @@ function SignIn() {
   });
 }
 
-
+function SignInWithGoogle() {
+  var provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(provider).then(() => {
+    alert("Successfully Signed In!");
+    window.location.href = "./index.html";
+  }).catch(error => {
+    alert(error.message); 
+  });
+}
   

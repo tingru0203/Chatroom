@@ -1,0 +1,134 @@
+
+
+#main{
+  padding-top: 56px;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+#left{
+  background-color: #6a6a6a;
+  /*background-color: gray;*/
+  width: 25%;
+  /*float: left;*/
+}
+
+#right{
+  background-color: #3b5998;
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+}
+
+.hide{
+  visibility: hidden;
+  /*display:none;*/
+}
+
+#profile{
+  font-size: 18px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+#mychatroom{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow-y: scroll;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+#content{
+  background-color: white;
+  display: flex;
+  height: 80vh;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow-y: scroll;
+  padding-left: 1%;
+  padding-right: 1%;
+}
+
+#top{
+  color: white;
+  font-size: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+#addBtn{
+  width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  background: #757575;
+  color: white;
+  font-size: 14px;
+  text-align: center;
+  box-shadow: none;
+  margin: 10px;
+}
+
+#addBtn:hover {
+  background: #616161;
+}
+
+#bottom{
+  font-size: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+.me{
+  display: flex;
+  padding: 3px;
+  margin: 2px;
+  border: 1px solid black;
+  border-radius: 15%;
+  align-self: flex-end;
+  /*direction: rtl;*/
+}
+
+.other{
+  display: flex;
+  padding: 3px;
+  margin: 2px;
+  border: 1px solid black;
+  border-radius: 15%;
+  align-self: flex-start;
+}
+
+.me_name{
+  display: flex;
+  margin: 2px;
+  align-self: flex-end;
+  font-size: 12px;
+}
+
+.other_name{
+  display: flex;
+  margin: 2px;
+  align-self: flex-start;
+  font-size: 12px;
+}
+
+#message{
+  width: 70%;
+}
