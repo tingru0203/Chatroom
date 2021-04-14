@@ -1,18 +1,76 @@
-
-
 #main{
-  padding-top: 56px;
-  height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+  padding-top: 56px;
+  height: 100vh;
 }
 
 #left{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   background-color: #6a6a6a;
-  /*background-color: gray;*/
+  padding: 2%;
   width: 25%;
-  /*float: left;*/
+}
+
+#profile{
+  font-size: 16px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+#name{
+  font-size: 24px;
+}
+
+#email{
+  font-size: 12px;
+}
+
+#btn1{ /* Create Private Chatroom */
+  padding: 5px;
+  background: #07015a;
+  color: white;
+  font-size: 16px;
+  text-align: center;
+  border: none;
+  box-shadow: none;
+  margin: 10px;
+}
+
+#btn1:hover {
+  background: #12013a;
+}
+
+#mychatroom{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow-y: scroll;
+}
+
+#roombtn{
+  padding: 5px;
+  background: #c5c5c5;
+  color: white;
+  font-size: 18px;
+  text-align: center;
+  border: none;
+  box-shadow: none;
+}
+
+#roombtn:hover {
+  background: #999999;
+}
+
+#roombtn:focus {
+  border: black 2px solid;
+  outline: none;
 }
 
 #right{
@@ -27,23 +85,29 @@
   /*display:none;*/
 }
 
-#profile{
-  font-size: 18px;
-  color: white;
+#top{
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  margin-left: 5%;
-  margin-right: 5%;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  font-size: 20px;
+  padding: 0 2%;
 }
 
-#mychatroom{
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  overflow-y: scroll;
-  margin-left: 5%;
-  margin-right: 5%;
+#addBtn{
+  padding: 5px 20px;
+  background: #757575;
+  color: white;
+  font-size: 14px;
+  text-align: center;
+  border: none;
+  box-shadow: none;
+  margin: 10px;
+}
+
+#addBtn:hover {
+  background: #616161;
 }
 
 #content{
@@ -53,77 +117,49 @@
   flex-direction: column;
   justify-content: flex-start;
   overflow-y: scroll;
-  padding-left: 1%;
-  padding-right: 1%;
+  padding: 1%;
 }
 
-#top{
-  color: white;
-  font-size: 20px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  margin-left: 5%;
-  margin-right: 5%;
-}
-
-#addBtn{
-  width: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 5px;
-  background: #757575;
-  color: white;
-  font-size: 14px;
-  text-align: center;
-  box-shadow: none;
-  margin: 10px;
-}
-
-#addBtn:hover {
-  background: #616161;
+#start{
+  font-size: 40px;
+  align-self: center;
+  padding: 20px;
 }
 
 #bottom{
-  font-size: 20px;
+  font-size: 14px;
   display: flex;
   flex-direction: row;
   justify-content: center;
+  padding: 10px;
   align-items: center;
-  margin-left: 5%;
-  margin-right: 5%;
 }
 
 .me{
-  display: flex;
-  padding: 3px;
+  background-color: #2e75b8;
+  color: white;
+  padding: 3px 10px;
   margin: 2px;
-  border: 1px solid black;
-  border-radius: 15%;
+  border-radius: 10px;
   align-self: flex-end;
   /*direction: rtl;*/
 }
 
 .other{
-  display: flex;
-  padding: 3px;
+  background-color: #d6d6d6;
+  padding: 3px 10px;
   margin: 2px;
-  border: 1px solid black;
-  border-radius: 15%;
+  border-radius: 10px;
   align-self: flex-start;
 }
 
 .me_name{
-  display: flex;
   margin: 2px;
   align-self: flex-end;
   font-size: 12px;
 }
 
 .other_name{
-  display: flex;
   margin: 2px;
   align-self: flex-start;
   font-size: 12px;
@@ -132,3 +168,42 @@
 #message{
   width: 70%;
 }
+
+@media (max-width: 767.98px) {
+  #left{
+    padding: 0;
+    width: 0%;
+  }
+  #right{
+    width: 100%;
+  }
+  .offcanvas-collapse {
+    position: fixed;
+    top: 56px; /* Height of navbar */
+    bottom: 0;
+    width: 100%;
+    padding-right: 1rem;
+    padding-left: 1rem;
+    overflow-y: auto;
+    background-color: var(--gray-dark);
+    transition: -webkit-transform .3s ease-in-out;
+    transition: transform .3s ease-in-out;
+    transition: transform .3s ease-in-out, -webkit-transform .3s ease-in-out;
+    -webkit-transform: translateX(100%);
+    transform: translateX(100%);
+  }
+  .offcanvas-collapse.open {
+    -webkit-transform: translateX(-1rem);
+    transform: translateX(-1rem); /* Account for horizontal padding on navbar */
+  }
+
+  #left.open {
+    overflow-x: visible;
+    padding: 20px;
+    width: 100%;
+  }
+  #right.Close {
+    display: none;
+  }
+}
+
