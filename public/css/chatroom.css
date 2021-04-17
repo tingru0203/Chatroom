@@ -24,6 +24,27 @@
   justify-content: flex-start;
 }
 
+#photo{
+  width: 70px;
+  height: 70px;
+  border-radius: 100%;
+}
+
+#upBtn{
+  padding: 5px;
+  background: #07015a;
+  color: white;
+  font-size: 16px;
+  text-align: center;
+  border: none;
+  box-shadow: none;
+  margin: 10px;
+}
+
+#upload {
+  display: none;
+}
+
 #name{
   font-size: 24px;
 }
@@ -122,8 +143,21 @@
 
 #start{
   font-size: 40px;
-  align-self: center;
+  /*align-self: center;*/
   padding: 20px;
+  position:relative;
+  animation-name: left-right;
+  animation-duration:7s;
+  animation-iteration-count:infinite;
+}
+
+@keyframes left-right{
+  from{
+      left:0%;
+  }
+  to{
+      left:100%;
+  }
 }
 
 #bottom{
@@ -139,18 +173,35 @@
   background-color: #2e75b8;
   color: white;
   padding: 3px 10px;
-  margin: 2px;
+  margin: 15px 2px;
   border-radius: 10px;
   align-self: flex-end;
-  /*direction: rtl;*/
+  word-break: break-all;
+  max-width: 50%;
 }
 
 .other{
   background-color: #d6d6d6;
   padding: 3px 10px;
-  margin: 2px;
+  margin: 0px 2px 8px 25px;
   border-radius: 10px;
   align-self: flex-start;
+  word-break: break-all;
+  max-width: 50%;
+}
+
+.other_info{
+  display: flex;
+  flex-direction: row;
+  align-self: flex-start;
+}
+
+.other_photo{
+  align-self: flex-start;
+  width: 25px;
+  height: 25px;
+  margin: 0px 2px;
+  border-radius: 100%;
 }
 
 .me_name{
@@ -197,13 +248,22 @@
     transform: translateX(-1rem); /* Account for horizontal padding on navbar */
   }
 
+  .hideImg{
+    display: none;
+  }
+
+  .showImg{
+    display: block;
+  }
+
   #left.open {
     overflow-x: visible;
-    padding: 20px;
+    padding: 5%;
     width: 100%;
   }
   #right.Close {
     display: none;
   }
+
 }
 

@@ -15,6 +15,7 @@
     <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-functions.js"></script>
 
@@ -33,7 +34,12 @@
     <!-- navbar -->
     <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
       <button class="navbar-toggler p-0 border-0" type="button" data-toggle="offprofile">
-        <span class="navbar-toggler-icon"></span>
+        <svg id="img1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+          <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+        </svg>
+        <svg id="img2" class="hideImg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">
+          <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+        </svg>
       </button>
       <a class="navbar-brand" href="#">Chatroom</a>
       <button class="navbar-toggler p-0 border-0" type="button" data-toggle="offcanvas">
@@ -55,6 +61,11 @@
     <div id="main">
       <div id="left">
         <div id="profile">
+          <img id="photo"></img>
+          <label id="upBtn">
+            Upload your photo
+            <input onchange="uploadPhoto(this);" id="upload" accept="image/*" type="file">
+          </label>
           <p id="name"></p>
           <p id="email"></p>
           <p>Room</p>

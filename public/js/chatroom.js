@@ -1,20 +1,33 @@
 let cur_room;
-let first_count;
+let first_count, second_count;
 
 function init() {
   firebase.auth().onAuthStateChanged((user) => {
     var menu = $('#dynamic-menu');
     if (user) {
-      // my chatroom
+      // my chatroom 
       var name = $("#name");
       var email = $("#email");
       var mychatroom = $("#mychatroom");
       name.html(user.displayName);
-      email.html(user.email);     
-      firebase.database().ref('users/' + email.html().replace('@', '_').split('.').join('_')).on('value', snapshot => {
+      email.html(user.email);
+
+      firebase.database().ref('users/' + email.html().replace('@', '_').replace('.', '_')).once('value').then(snapshot => {
+        var photo = snapshot.child("photo").val();
+        if(photo != "user.jpg")
+          photo = name.html() + "/1.jpg";
+        firebase.storage().ref().child(photo).getDownloadURL().then(url => {
+          var img = document.getElementById('photo');
+          img.src = url;
+        }).catch(error => {
+          alert(error.message); 
+        });
+      });
+
+      firebase.database().ref('users/' + email.html().replace('@', '_').replace('.', '_')).on('value', snapshot => {
         mychatroom.html("");
         for(var n in snapshot.val()){
-          if(n != "email" && n != "password" && n != "name")
+          if(n != "email" && n != "password" && n != "name" && n != "photo")
             mychatroom.append('<button id="roombtn" onclick="chooseChatroom(\''+n+'\');">'+ n +'</button>');
         }
       });
@@ -49,7 +62,7 @@ function createChatroom() {
   var room_name = prompt("Chatroom Name", "");
   if(room_name != "") {
     var email = $("#email");
-    firebase.database().ref('users/' + email.html().replace('@', '_').split('.').join('_') + "/" + room_name).set({
+    firebase.database().ref('users/' + email.html().replace('@', '_').replace('.', '_') + "/" + room_name).set({
       room_name: room_name,
     });
 
@@ -59,8 +72,54 @@ function createChatroom() {
   }
 }
 
+function other(childshot, send_message) {
+  return new Promise(resolve => {
+    firebase.storage().ref().child(childshot.val().name + "/1.jpg").getDownloadURL().then(url => {
+      $("#content").append('<div class="other_info"><img class="other_photo" src='+url+'></img><div class="other_name">'+childshot.val().name+'</div></div>');
+      $("#content").append('<div class="other">'+ send_message +'</div>');
+      console.log(1);
+      resolve();
+    }).catch(() => {
+      firebase.storage().ref().child("user.jpg").getDownloadURL().then(url => {
+        $("#content").append('<div class="other_info"><img class="other_photo" src='+url+'></img><div class="other_name">'+childshot.val().name+'</div></div>');
+        $("#content").append('<div class="other">'+ send_message +'</div>');
+        console.log(2);
+        resolve();
+      });
+    });
+  });
+}
+
+function promise_message(snapshot) {
+  return new Promise(resolve => {
+    snapshot.forEach(async function(childshot) {
+      console.log("t");
+      if(childshot.key != "start") {
+        first_count++;
+        var send_message = childshot.val().message.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        if(childshot.val().name == $("#name").html()) { //right
+          $("#content").append('<div class="me">'+ send_message +'</div>');
+        }
+        else { //left
+          await other(childshot, send_message);
+          /*firebase.storage().ref().child(childshot.val().name + "/1.jpg").getDownloadURL().then(url => {
+            $("#content").append('<div class="other_info"><img class="other_photo" src='+url+'></img><div class="other_name">'+childshot.val().name+'</div></div>');
+            $("#content").append('<div class="other">'+ send_message +'</div>');
+          }).catch(() => {
+            firebase.storage().ref().child("user.jpg").getDownloadURL().then(url => {
+              $("#content").append('<div class="other_info"><img class="other_photo" src='+url+'></img><div class="other_name">'+childshot.val().name+'</div></div>');
+              $("#content").append('<div class="other">'+ send_message +'</div>');
+            });
+          });*/
+        }
+      }
+    })
+    //resolve();
+  });
+}
+
 function chooseChatroom(n) {
-  first_count = 0;
+  first_count = second_count = 0;
   cur_room = n;
   var content = $("#content");
   var name = $("#name");
@@ -68,33 +127,65 @@ function chooseChatroom(n) {
   $("#roomname").html(cur_room);
   $(".hide").css("visibility", "visible");
 
-  database.on('value', snapshot => {
-    content.html("");
-    for(var i in snapshot.val()) {
-      if(i != "start") { //right
-        if(snapshot.val()[i].name == name.html()) {
-          content.append('<div class="me_name">'+snapshot.val()[i].name+'</div>');
-          content.append('<div class="me">'+snapshot.val()[i].message+'</div>');
+  content.html("");
+  database.once('value').then(async function(snapshot) {
+    await promise_message(snapshot);
+    console.log("a");
+    /*snapshot.forEach(function(childshot) {
+      if(childshot.key != "start") {
+        var send_message = childshot.val().message.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        if(childshot.val().name == name.html()) { //right
+          content.append('<div class="me">'+ send_message +'</div>');
         }
         else { //left
-          content.append('<div class="other_name">'+snapshot.val()[i].name+'</div>');
-          content.append('<div class="other">'+snapshot.val()[i].message+'</div>');
+          //await other(childshot, send_message);
+          firebase.storage().ref().child(childshot.val().name + "/1.jpg").getDownloadURL().then(url => {
+            content.append('<div class="other_info"><img class="other_photo" src='+url+'></img><div class="other_name">'+childshot.val().name+'</div></div>');
+            content.append('<div class="other">'+ send_message +'</div>');
+          }).catch(() => {
+            firebase.storage().ref().child("user.jpg").getDownloadURL().then(url => {
+              content.append('<div class="other_info"><img class="other_photo" src='+url+'></img><div class="other_name">'+childshot.val().name+'</div></div>');
+              content.append('<div class="other">'+ send_message +'</div>');
+            });
+          });
         }
       }
-    }
 
-    // Notification
-    if(snapshot.val().name != name.html() && first_count) {
-      console.log(snapshot.val().name, name.html());
-      if (Notification && Notification.permission === "granted") {
-        var n = new Notification("message received!!");
-      }
-      else {
-      }
-    }
-    first_count = 1;
-  });
+      first_count++;
+    })*/
 
+    /*database.on('child_added', function(data) {
+      second_count++;
+
+      if (second_count > first_count) {
+        var send_message = data.val().message.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        if(data.val().name == name.html()) { //right
+          content.append('<div class="me">'+ send_message +'</div>');
+        }
+        else { //left
+          //await other(data, send_message);
+          console.log("f2");
+          firebase.storage().ref().child(data.val().name + "/1.jpg").getDownloadURL().then(url => {
+            content.append('<div class="other_info"><img class="other_photo" src='+url+'></img><div class="other_name">'+data.val().name+'</div></div>');
+            content.append('<div class="other">'+ send_message +'</div>');
+          }).catch(() => {
+            firebase.storage().ref().child("user.jpg").getDownloadURL().then(url => {
+              content.append('<div class="other_info"><img class="other_photo" src='+url+'></img><div class="other_name">'+data.val().name+'</div></div>');
+              content.append('<div class="other">'+ send_message +'</div>');
+            });
+          });
+
+          // Notification
+          console.log("noti");
+          if (Notification && Notification.permission === "granted") {
+            var n = new Notification("message received!!");
+          }
+        } 
+      }
+
+      content.scrollTop(content.height()*10);
+    });*/
+  })
 }
 
 function addNewMember() {
@@ -122,6 +213,7 @@ function addNewMember() {
 function sendMessage() {
   var name = $("#name");
   var message = $("#message");
+
   firebase.database().ref('content/' + cur_room).push({
     name: name.html(),
     message : message.val()
@@ -139,5 +231,28 @@ $(function () {
   $('[data-toggle="offprofile"]').on('click', function () {
     $('#left').toggleClass('open');
     $('#right').toggleClass('Close');
+    $('#img1').toggleClass('hideImg');
+    $('#img2').toggleClass('showImg');
+    $("#content").scrollTop($("#content").height());
   });
 });
+
+function uploadPhoto(th) {
+  var file = th.files[0];
+  var photo = $("#name").html() + '/1.jpg';
+
+  firebase.storage().ref().child(photo).put(file).then(function(snapshot) {
+    firebase.storage().ref().child(photo).getDownloadURL().then(url => {
+      var img = document.getElementById('photo');
+      img.src = url;
+    }).catch(error => {
+      alert(error.message); 
+    });
+  }).catch(error => {
+    alert(error.message); 
+  });
+
+  firebase.database().ref('users/' + $("#email").html().replace('@', '_').split('.').join('_')).update({
+    photo: "1.jpg"
+  })
+}
