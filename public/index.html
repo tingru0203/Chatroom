@@ -43,32 +43,33 @@
       </button>
       <a class="navbar-brand" href="#">Chatroom</a>
       <button class="navbar-toggler p-0 border-0" type="button" data-toggle="offcanvas">
-          <span class="navbar-toggler-icon"></span>
+        <span class="navbar-toggler-icon"></span>
       </button>
 
       <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
-          <ul class="navbar-nav mr-auto">
-              <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
-                  <div id="dynamic-menu" class="dropdown-menu" aria-labelledby="dropdown01">
-                      <a class="dropdown-item" href="./sign_in.html">Sign In</a>
-                  </div>
-              </li>
-          </ul>
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
+            <div id="dynamic-menu" class="dropdown-menu" aria-labelledby="dropdown01">
+              <a class="dropdown-item" href="./sign_in.html">Sign In</a>
+            </div>
+          </li>
+        </ul>
       </div>
     </nav>
 
     <div id="main">
       <div id="left">
         <div id="profile">
-          <img id="photo"></img>
-          <label id="upBtn">
-            Upload your photo
-            <input onchange="uploadPhoto(this);" id="upload" accept="image/*" type="file">
-          </label>
+          <div>
+            <img id="photo"></img>
+            <label id="upBtn">
+              Upload your photo
+              <input onchange="uploadPhoto(this);" id="upload" accept="image/*" type="file">
+            </label>
+          </div>
           <p id="name"></p>
           <p id="email"></p>
-          <p>Room</p>
           <button id="btn1" onclick="createChatroom();">Create Private Chatroom</button>
           <div id="mychatroom"></div>
         </div>

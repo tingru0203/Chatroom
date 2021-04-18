@@ -7,7 +7,7 @@ function writeUserData() {
     firebase.auth().currentUser.updateProfile({
       displayName: name.val()
     });
-    firebase.database().ref('users/' + email.val().replace('@', '_').split('.').join('_')).set({
+    firebase.database().ref('users/' + name.val()).set({
       name: name.val(),
       email: email.val(),
       password: password.val(),
@@ -18,17 +18,6 @@ function writeUserData() {
     }).catch(error => { 
       alert(error.message); 
     });
-
-    /*fetch("https://adl.edu.tw/modules/learn_video/images/user_large.jpg").then(function(response) {
-      return response.blob();
-    }).then(function(blob) {
-      var file = new File([blob], 'user.jpg', blob);
-      firebase.storage().ref().child(name.val()).put(file).then(function(snapshot) {}).catch(error => {
-        alert(error.message); 
-      });
-    });*/
-    
-   
   }).catch(error => { 
     alert(error.message); 
   });
@@ -51,11 +40,12 @@ function SignInWithGoogle() {
   firebase.auth().signInWithPopup(provider).then(result => {
     var user = result.user;
     firebase.database().ref("users/").once('value').then(snapshot => { 
-      if(!snapshot.hasChild(user.email.replace('@', '_').split('.').join('_'))) {
-        firebase.database().ref('users/' + user.email.replace('@', '_').split('.').join('_')).set({
+      if(!snapshot.hasChild(user.displayName)) {
+        firebase.database().ref('users/' + user.displayName).set({
           name: user.displayName,
           email: user.email,
-          photo: "user.jpg"
+          photo: "user.jpg",
+          bio: "Hi!"
         }).then(() => {
           alert("Successfully Signed In!");
           window.location.href = "./index.html";

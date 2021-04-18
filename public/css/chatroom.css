@@ -27,18 +27,24 @@
 #photo{
   width: 70px;
   height: 70px;
+  margin: 5px;
   border-radius: 100%;
 }
 
 #upBtn{
-  padding: 5px;
-  background: #07015a;
+  padding: 5px 10px;
+  background: #2c295e;
   color: white;
-  font-size: 16px;
+  font-size: 12px;
   text-align: center;
   border: none;
+  border-radius: 7px;
   box-shadow: none;
-  margin: 10px;
+  margin: 20px;
+}
+
+#upBtn:hover{
+  background: #07015a;
 }
 
 #upload {
@@ -55,7 +61,7 @@
 
 #btn1{ /* Create Private Chatroom */
   padding: 5px;
-  background: #07015a;
+  background: #2c295e;
   color: white;
   font-size: 16px;
   text-align: center;
@@ -65,7 +71,7 @@
 }
 
 #btn1:hover {
-  background: #12013a;
+  background: #07015a;
 }
 
 #mychatroom{
@@ -147,7 +153,7 @@
   padding: 20px;
   position:relative;
   animation-name: left-right;
-  animation-duration:7s;
+  animation-duration:10s;
   animation-iteration-count:infinite;
 }
 
@@ -204,6 +210,33 @@
   border-radius: 100%;
 }
 
+.popup {
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.popup .popuptext {
+  visibility: hidden;
+  word-break: break-all;
+  background-color: #555;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 10px;
+  position: absolute;
+  left: 50%;
+  z-index: 1;
+}
+
+.popup .show {
+  visibility: visible;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s;
+}
+
 .me_name{
   margin: 2px;
   align-self: flex-end;
@@ -218,6 +251,14 @@
 
 #message{
   width: 70%;
+}
+
+#other_profile{
+  /*display: none;*/
+  background-color: black;
+  color: white;
+  width:100px;
+  height:100px;
 }
 
 @media (max-width: 767.98px) {
@@ -265,5 +306,8 @@
     display: none;
   }
 
+  .popup .popuptext {
+    left: 25%;
+  }
 }
 

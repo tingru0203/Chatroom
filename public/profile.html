@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chatroom</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="./css/profile.css">
+
+    <!-- Firebase App is always required and must be first -->
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-functions.js"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+    <!-- configuration -->
+    <script src="./js/config.js"></script>
+
+    <script src="./js/profile.js"></script>
+  </head>
+
+  <body onload="init();">
+      <p id="title">Profile</p>
+
+      <div id="main">
+        <div>
+          <span><b>Name: </b></span><span id="name"></span><br><br>
+        </div>
+        <div>
+          <span><b>E-mail: </b></span><span id="email"></span><br><br>
+        </div>
+        <label><b>Bio</b></label>
+        <textarea cols="25" rows="10"></textarea>
+        <button onclick="Save();">Save</button>  
+      </div>
+      <button onclick="chat();">Go to chat</button>  
+  </body>
+</html>
