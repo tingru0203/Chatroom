@@ -26,21 +26,20 @@
 [https://software-studio-d7a04.web.app/index.html](https://software-studio-d7a04.web.app/index.html)
 
 ## Website Detail Description
-此project為網頁聊天室，進入網站後，
-
+此project為網頁聊天室，進入網站後，若還沒登入，則點選上方的Account -> Sign in進入登入頁面，若還沒有帳號，則先點Sign up。
+登入後即可創建聊天室、加入新成員聊天。
+另外，也可以更改個人簡介與大頭貼。
 
 # Components Description : 
-1. Sign up : [xxxx]
-2. Sign in : [xxxx]
-3. Sign in with Google :
-4. RWD : [xxxx]
-5. Create a private chatroom :
-6. Send messages : 
-7. history message :
-8. Chrome notification :
+1. Sign up : 輸入名稱、E-mail、密碼註冊。
+2. Sign in : 輸入E-mail、密碼登入。
+3. Sign in with Google : 選擇Google帳戶登入。
+4. RWD : 
+5. Create private chatrooms : 點擊按鈕後，輸入聊天室名稱，就可以有新的聊天室。目前所加入的聊天室會顯示在頁面左方，點擊便可進入聊天。
+6. Send messages : 在輸入框輸入訊息後，點![](./public/img/send.png =20x20)或按Enter鍵傳送訊息。
+7. history message : 點擊頁面左方的聊天室名稱，即可進入該聊天室並載入歷史訊息。
+8. Chrome notification : 
 9. Deal with messages when sending html code :
-10. Chrome notification :
-
 
 # Other Functions Description : 
 Sign out
