@@ -8,13 +8,15 @@ function init() {
       var name = $("#name");
       var email = $("#email");
       var mychatroom = $("#mychatroom");
+
+      // name / email
       name.html(user.displayName);
       email.html(user.email);
 
       // photo
       firebase.database().ref('users/' + name.html()).once('value').then(snapshot => {
         var photo = snapshot.val().photo;
-        if(photo != "user.jpg")
+        if(photo != "user.jpg") //change
           photo = name.html() + "/1.jpg";
         firebase.storage().ref().child(photo).getDownloadURL().then(url => {
           var img = document.getElementById('photo');
@@ -25,7 +27,7 @@ function init() {
       });
 
       // my chatroom 
-      firebase.database().ref('users/' + name.html()).on('child_added', snapshot => {
+      firebase.database().ref('users/' + name.html()).on('child_added', snapshot => { // join chatroom
         if(snapshot.key != "email" && snapshot.key != "password" && snapshot.key != "name" && snapshot.key != "photo" && snapshot.key != "bio") {
           mychatroom.append(
             `<button id="roombtn" onclick="chooseChatroom(\'`+snapshot.key+`\');">`+ 
@@ -50,7 +52,7 @@ function init() {
         });
       });
 
-      // Notification
+      // Notification request
       if (Notification && Notification.permission !== "granted") {
         Notification.requestPermission(function (status) {
           if (Notification.permission !== status) 
@@ -59,28 +61,32 @@ function init() {
       }
     }
     else { // No user is signed in.
+      // navbar - sign in
       menu.html("<a class='dropdown-item' href='./sign_in.html'>Sign In</a>");
+
       $('#left').html("");
       $('#right').html("");
     }
   });
 }
 
-function createChatroom() {
+function createChatroom() { // when click the create button
   var room_name = prompt("Chatroom Name", "");
   if(room_name != "") {
     var name = $("#name");
+    // user
     firebase.database().ref('users/' + name.html() + "/" + room_name).set({
       room_name: room_name,
     });
 
+    // content
     firebase.database().ref('content/' + room_name).push({
       start: name.html(),
     });
   }
 }
 
-function other(childshot, send_message, total_message) {
+function other(childshot, send_message, total_message) { // once - other(left)
   return new Promise(resolve => {
     firebase.database().ref("users/"+childshot.val().name).once('value').then(snapshot => {
       var photo = snapshot.val().photo;
@@ -88,58 +94,77 @@ function other(childshot, send_message, total_message) {
         photo = childshot.val().name + "/1.jpg";
 
       firebase.storage().ref().child(photo).getDownloadURL().then(url => {
+        // name + photo
         total_message[total_message.length] = 
          `<div class="other_info popup">
             <img onclick="other_profile(event);" class="other_photo" src=`+url+`></img>
             <div class="other_name">`+childshot.val().name+`</div>
             <div class="popuptext" id="myPopup"></div>
           </div>`;
-        if(send_message == "!/!/!Good!/!/!")
+        
+        //message
+        if(send_message == "!/!/!Good!/!/!") {
           total_message[total_message.length] = 
-           `<div id="other_good">
+            `<div id="other_good">
               <img width="70" src="./img/good_blue.jpg"></img>
             </div>`;
-        else
+        }
+        else if(send_message == "!/!/!Heart!/!/!") {
+          total_message[total_message.length] = 
+            `<div id="other_heart">
+              <img width="70" src="./img/heart.png"></img>
+            </div>`;
+        }
+        else { // text
           total_message[total_message.length] = '<div class="other">'+ send_message +'</div>';
+        }
         resolve();
       })
     });
   });
 }
 
-function first_message(snapshot, total_message) {
+function first_message(snapshot, total_message) { // once
   return new Promise(async function(resolve) {
     for(var n in snapshot.val()) {
       first_count++;
-      if(snapshot.child(n).hasChild("member")) {
+
+      if(snapshot.child(n).hasChild("member")) { // join message(middle)
         total_message[total_message.length] = 
          `<div class="member">`+ 
             snapshot.child(n).child("member").val() +` joined the chatroom
           </div>`;
       }
-      else {
-        if(snapshot.child(n).hasChild("start")) {
-          total_message[total_message.length] = 
-           `<div class="member">`+ 
-              snapshot.child(n).child("start").val() +` created the chatroom
-            </div>`;
-        }
-        else {
-          //replace <, >, &
-          var send_message = snapshot.child(n).child("message").val().replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g, '&amp;');
+      else if(snapshot.child(n).hasChild("start")) { // create message(middle)
+        total_message[total_message.length] = 
+          `<div class="member">`+ 
+            snapshot.child(n).child("start").val() +` created the chatroom
+          </div>`;
+      }
+      else { // me(right) or other(left)
+        //replace <, >, &
+        var send_message = snapshot.child(n).child("message").val().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           
-          if(snapshot.child(n).child("name").val() == $("#name").html()) { //right
-            if(send_message == "!/!/!Good!/!/!")
-              total_message[total_message.length] = 
-               `<div id="me_good">
-                  <img width="70" src="./img/good_blue.jpg"></img>
-                </div>`;
-            else
-              total_message[total_message.length] = '<div class="me">'+ send_message +'</div>';
+        if(snapshot.child(n).child("name").val() == $("#name").html()) { // me(right)
+          // message
+          if(send_message == "!/!/!Good!/!/!") {
+            total_message[total_message.length] = 
+              `<div id="me_good">
+                <img width="70" src="./img/good_blue.jpg"></img>
+              </div>`;
           }
-          else { //left
-            await other(snapshot.child(n), send_message, total_message);
+          else if(send_message == "!/!/!Heart!/!/!") {
+            total_message[total_message.length] = 
+              `<div id="me_heart">
+                <img width="70" src="./img/heart.png"></img>
+              </div>`;
           }
+          else { // text
+            total_message[total_message.length] = '<div class="me">'+ send_message +'</div>';
+          }
+        }
+        else { // other(left)
+          await other(snapshot.child(n), send_message, total_message);
         }
       }
     }
@@ -157,6 +182,7 @@ function chooseChatroom(n) {
   $("#roomname").html("<b>"+cur_room+"</b>");
   $(".hide").css("visibility", "visible");
 
+  // Loading
   content.html(`<div class="d-flex justify-content-center" style="padding: 50px;">
                   <div class="spinner-border" role="status">
                     <span class="sr-only">Loading...</span>
@@ -167,70 +193,84 @@ function chooseChatroom(n) {
     // once
     await first_message(snapshot, total_message);
     content.html(total_message.join(''));
-    document.getElementById("content").scrollTop = document.getElementById("content").scrollHeight - document.getElementById("content").clientHeight;
+    content.scrollTop(content.height()*10);
 
     // on
     database.on('child_added', data => {
-      console.log(cur_room, data.ref.parent.key);
-      if(cur_room == data.ref.parent.key) { //open the chatroom - content + notification
+      if(cur_room == data.ref.parent.key) { // open the chatroom - content + notification
         second_count++;
         if (second_count > first_count) {
-          if(data.hasChild("member")) {
+          if(data.hasChild("member")) { // join message(middle)
             total_message[total_message.length] = 
               `<div class="member">`+ 
                 data.val().member +` joined the chatroom
               </div>`;
                 
             content.html(total_message.join(''));
-            document.getElementById("content").scrollTop = document.getElementById("content").scrollHeight - document.getElementById("content").clientHeight;
+            content.scrollTop(content.height()*10);
 
             // Notification - add
             if (Notification && Notification.permission === "granted") {
-              var n = new Notification(data.val().member+" have been added to "+data.ref.parent.key);
+              var n = new Notification(data.val().member+" joined "+data.ref.parent.key);
             }
           }
-          else {
+          else { // me(right) or other(left)
             //replace <, >, &
-            var send_message = data.val().message.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g, '&amp;');
+            var send_message = data.val().message.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             
-            if(data.val().name == name.html()) { //right
+            if(data.val().name == name.html()) { // me(right)
               // message
-              if(send_message == "!/!/!Good!/!/!")
+              if(send_message == "!/!/!Good!/!/!") {
                 total_message[total_message.length] = 
-                `<div id="me_good">
+                  `<div id="me_good">
                     <img width="70" src="./img/good_blue.jpg"></img>
                   </div>`;
-              else
+              }
+              else if(send_message == "!/!/!Heart!/!/!") {
+                total_message[total_message.length] = 
+                  `<div id="me_heart">
+                    <img width="70" src="./img/heart.png"></img>
+                  </div>`;
+              }
+              else //text
                 total_message[total_message.length] = '<div class="me">'+ send_message +'</div>';
 
               content.html(total_message.join(''));
-              document.getElementById("content").scrollTop = document.getElementById("content").scrollHeight - document.getElementById("content").clientHeight;
+              content.scrollTop(content.height()*10);
             }
-            else { //left
+            else { // other(left)
               firebase.database().ref("users/"+data.val().name).once('value').then(snapshot => {
                 var photo = snapshot.val().photo;
                 if(photo != "user.jpg") 
                   photo = data.val().name + "/1.jpg";
 
                 firebase.storage().ref().child(photo).getDownloadURL().then(url => {
-                  // photo + name
+                  // name + photo
                   total_message[total_message.length] = 
                   `<div class="other_info popup">
                       <img onclick="other_profile(event);" class="other_photo" src=`+url+`></img>
                       <div class="other_name">`+data.val().name+`</div>
                       <div class="popuptext" id="myPopup"></div>
                     </div>`;
+                  
                   // message
-                  if(send_message == "!/!/!Good!/!/!")
+                  if(send_message == "!/!/!Good!/!/!") {
                     total_message[total_message.length] = 
                     `<div id="other_good">
                         <img width="70" src="./img/good_blue.jpg"></img>
                       </div>`;
-                  else
+                  }
+                  else if(send_message == "!/!/!Heart!/!/!") {
+                    total_message[total_message.length] = 
+                      `<div id="other_heart">
+                        <img width="70" src="./img/heart.png"></img>
+                      </div>`;
+                  }
+                  else // text
                     total_message[total_message.length] = '<div class="other">'+ send_message +'</div>';
                   
                   content.html(total_message.join(''));
-                  document.getElementById("content").scrollTop = document.getElementById("content").scrollHeight - document.getElementById("content").clientHeight;
+                  content.scrollTop(content.height()*10);
                 }).catch(error => {
                   alert(error.message); 
                 });
@@ -239,6 +279,8 @@ function chooseChatroom(n) {
                 if (Notification && Notification.permission === "granted") {
                   if(send_message == "!/!/!Good!/!/!")
                     var n = new Notification(data.val().name+" sent a like");
+                  else if(send_message == "!/!/!Heart!/!/!")
+                    var n = new Notification(data.val().name+" sent a heart");
                   else
                     var n = new Notification(data.val().name+" sent a message: "+send_message);
                 }
@@ -251,18 +293,20 @@ function chooseChatroom(n) {
           if(data.hasChild("member")) {
             // Notification - add
             if (Notification && Notification.permission === "granted") {
-              var n = new Notification(data.val().member+" have been added to "+data.ref.parent.key);
+              var n = new Notification(data.val().member+" joined "+data.ref.parent.key);
             }
           }
           else {
             //replace <, >, &
-            var send_message = data.val().message.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g, '&amp;');
+            var send_message = data.val().message.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             
             if(data.val().name != name.html()) { //left
               // Notification - other's message
               if (Notification && Notification.permission === "granted") {
                 if(send_message == "!/!/!Good!/!/!")
                   var n = new Notification(data.val().name+" sent a like");
+                else if(send_message == "!/!/!Heart!/!/!")
+                  var n = new Notification(data.val().name+" sent a heart");
                 else
                   var n = new Notification(data.val().name+" sent a message: "+send_message);
               }
@@ -322,8 +366,16 @@ function sendMessage() {
   }
 }
 
+function sendHeart() {
+  var name = $("#name");
+
+  firebase.database().ref('content/' + cur_room).push({
+    name: name.html(),
+    message : "!/!/!Heart!/!/!",    
+  });
+}
+
 function sendGood() {
-  console.log("good");
   var name = $("#name");
 
   firebase.database().ref('content/' + cur_room).push({
@@ -377,6 +429,6 @@ $(function () {
     $('#right').toggleClass('Close');
     $('#img1').toggleClass('hideImg');
     $('#img2').toggleClass('showImg');
-    $("#content").scrollTop($("#content").height());
+    $("#content").scrollTop($("#content").height()*10);
   });
 });

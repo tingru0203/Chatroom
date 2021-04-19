@@ -217,6 +217,8 @@ html{
 }
 
 #me_good{
+  padding: 3px 10px;
+  margin: 15px 2px;
   align-self: flex-end;
   animation-name: large;
   animation-duration: 1s;
@@ -225,6 +227,8 @@ html{
 }
 
 #other_good{
+  padding: 3px 10px;
+  margin: 0px 2px 8px 25px;
   align-self: flex-start;
   animation-name: large;
   animation-duration: 1s;
@@ -427,5 +431,27 @@ html{
 ::-webkit-scrollbar-thumb{
 	background-color: rgb(0, 0, 0);
 	border: none;
+}
+
+#me_heart{
+  margin: 15px 2px;
+  align-self: flex-end;
+  animation: AnimationName 5s ease infinite;
+  background: linear-gradient(327deg, #ff0000, #ddf454, #11d1f2);
+  background-size: 600% 600%;
+}
+
+#other_heart{
+  margin: 0px 2px 8px 25px;
+  align-self: flex-start;
+  animation: AnimationName 5s ease infinite;
+  background: linear-gradient(327deg, #ff0000, #ddf454, #11d1f2);
+  background-size: 600% 600%;
+}
+
+@keyframes AnimationName {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
 }
 
