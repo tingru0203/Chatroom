@@ -25,11 +25,12 @@ function init() {
       });
 
       // my chatroom 
-      firebase.database().ref('users/' + name.html()).on('value', snapshot => {
-        mychatroom.html("");
-        for(var n in snapshot.val()){
-          if(n != "email" && n != "password" && n != "name" && n != "photo" && n != "bio")
-            mychatroom.append('<button id="roombtn" onclick="chooseChatroom(\''+n+'\');">'+ n +'</button>');
+      firebase.database().ref('users/' + name.html()).on('child_added', snapshot => {
+        if(snapshot.key != "email" && snapshot.key != "password" && snapshot.key != "name" && snapshot.key != "photo" && snapshot.key != "bio") {
+          mychatroom.append(
+            `<button id="roombtn" onclick="chooseChatroom(\'`+snapshot.key+`\');">`+ 
+              snapshot.key +
+            `</button>`);
         }
       });
 
@@ -73,13 +74,13 @@ function createChatroom() {
       room_name: room_name,
     });
 
-    firebase.database().ref('content/' + room_name).set({
-      start: 0,
+    firebase.database().ref('content/' + room_name).push({
+      start: name.html(),
     });
   }
 }
 
-function other(childshot, send_message) {
+function other(childshot, send_message, total_message) {
   return new Promise(resolve => {
     firebase.database().ref("users/"+childshot.val().name).once('value').then(snapshot => {
       var photo = snapshot.val().photo;
@@ -87,31 +88,58 @@ function other(childshot, send_message) {
         photo = childshot.val().name + "/1.jpg";
 
       firebase.storage().ref().child(photo).getDownloadURL().then(url => {
-        $("#content").append(`<div class="other_info popup">
-                                <img onclick="other_profile(event);" class="other_photo" src=`+url+`></img>
-                                <div class="other_name">`+childshot.val().name+`</div>
-                                <div class="popuptext" id="myPopup"></div>
-                              </div>`);
-        $("#content").append('<div class="other">'+ send_message +'</div>');
+        total_message[total_message.length] = 
+         `<div class="other_info popup">
+            <img onclick="other_profile(event);" class="other_photo" src=`+url+`></img>
+            <div class="other_name">`+childshot.val().name+`</div>
+            <div class="popuptext" id="myPopup"></div>
+          </div>`;
+        if(send_message == "!/!/!Good!/!/!")
+          total_message[total_message.length] = 
+           `<div id="other_good">
+              <img width="70" src="./img/good_blue.jpg"></img>
+            </div>`;
+        else
+          total_message[total_message.length] = '<div class="other">'+ send_message +'</div>';
         resolve();
       })
     });
   });
 }
 
-function first_message(snapshot) {
+function first_message(snapshot, total_message) {
   return new Promise(async function(resolve) {
     for(var n in snapshot.val()) {
       first_count++;
-      if(snapshot.child(n).key != "start") {
-        //replace <, >, &
-        var send_message = snapshot.child(n).child("message").val().replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g, '&amp;');
-        
-        if(snapshot.child(n).child("name").val() == $("#name").html()) { //right
-          $("#content").append('<div class="me">'+ send_message +'</div>');
+      if(snapshot.child(n).hasChild("member")) {
+        total_message[total_message.length] = 
+         `<div class="member">`+ 
+            snapshot.child(n).child("member").val() +` joined the chatroom
+          </div>`;
+      }
+      else {
+        if(snapshot.child(n).hasChild("start")) {
+          total_message[total_message.length] = 
+           `<div class="member">`+ 
+              snapshot.child(n).child("start").val() +` created the chatroom
+            </div>`;
         }
-        else { //left
-          await other(snapshot.child(n), send_message);
+        else {
+          //replace <, >, &
+          var send_message = snapshot.child(n).child("message").val().replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g, '&amp;');
+          
+          if(snapshot.child(n).child("name").val() == $("#name").html()) { //right
+            if(send_message == "!/!/!Good!/!/!")
+              total_message[total_message.length] = 
+               `<div id="me_good">
+                  <img width="70" src="./img/good_blue.jpg"></img>
+                </div>`;
+            else
+              total_message[total_message.length] = '<div class="me">'+ send_message +'</div>';
+          }
+          else { //left
+            await other(snapshot.child(n), send_message, total_message);
+          }
         }
       }
     }
@@ -124,82 +152,184 @@ function chooseChatroom(n) {
   cur_room = n;
   var content = $("#content");
   var name = $("#name");
-  var database = firebase.database().ref('content/' + n)
-  $("#roomname").html(cur_room);
+  var database = firebase.database().ref('content/' + n);
+  var total_message = [];
+  $("#roomname").html("<b>"+cur_room+"</b>");
   $(".hide").css("visibility", "visible");
 
-  content.html("");
+  content.html(`<div class="d-flex justify-content-center" style="padding: 50px;">
+                  <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </div>`);
+
   database.once('value').then(async function(snapshot) {
     // once
-    await first_message(snapshot);
+    await first_message(snapshot, total_message);
+    content.html(total_message.join(''));
+    document.getElementById("content").scrollTop = document.getElementById("content").scrollHeight - document.getElementById("content").clientHeight;
 
     // on
-    database.on('child_added', function(data) {
-      second_count++;
-      if (second_count > first_count) {
-        //replace <, >, &
-        var send_message = data.val().message.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g, '&amp;');
-        
-        if(data.val().name == name.html()) { //right
-          content.append('<div class="me">'+ send_message +'</div>');
-        }
-        else { //left
-          var photo = data.val().photo;
-          if(photo != "user.jpg") 
-            photo = data.val().name + "/1.jpg";
+    database.on('child_added', data => {
+      console.log(cur_room, data.ref.parent.key);
+      if(cur_room == data.ref.parent.key) { //open the chatroom - content + notification
+        second_count++;
+        if (second_count > first_count) {
+          if(data.hasChild("member")) {
+            total_message[total_message.length] = 
+              `<div class="member">`+ 
+                data.val().member +` joined the chatroom
+              </div>`;
+                
+            content.html(total_message.join(''));
+            document.getElementById("content").scrollTop = document.getElementById("content").scrollHeight - document.getElementById("content").clientHeight;
 
-          firebase.storage().ref().child(photo).getDownloadURL().then(url => {
-            $("#content").append(`<div class="other_info popup">
-                                    <img onclick="other_profile(event);" class="other_photo" src=`+url+`></img>
-                                    <div class="other_name">`+data.val().name+`</div>
-                                    <div class="popuptext" id="myPopup"></div>
-                                  </div>`);
-            $("#content").append('<div class="other">'+ send_message +'</div>');
-          })
-
-          // Notification
-          if (Notification && Notification.permission === "granted") {
-            var n = new Notification("message received!!");
+            // Notification - add
+            if (Notification && Notification.permission === "granted") {
+              var n = new Notification(data.val().member+" have been added to "+data.ref.parent.key);
+            }
           }
-        } 
-      }
+          else {
+            //replace <, >, &
+            var send_message = data.val().message.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g, '&amp;');
+            
+            if(data.val().name == name.html()) { //right
+              // message
+              if(send_message == "!/!/!Good!/!/!")
+                total_message[total_message.length] = 
+                `<div id="me_good">
+                    <img width="70" src="./img/good_blue.jpg"></img>
+                  </div>`;
+              else
+                total_message[total_message.length] = '<div class="me">'+ send_message +'</div>';
 
-      content.scrollTop(content.height()*10);
+              content.html(total_message.join(''));
+              document.getElementById("content").scrollTop = document.getElementById("content").scrollHeight - document.getElementById("content").clientHeight;
+            }
+            else { //left
+              firebase.database().ref("users/"+data.val().name).once('value').then(snapshot => {
+                var photo = snapshot.val().photo;
+                if(photo != "user.jpg") 
+                  photo = data.val().name + "/1.jpg";
+
+                firebase.storage().ref().child(photo).getDownloadURL().then(url => {
+                  // photo + name
+                  total_message[total_message.length] = 
+                  `<div class="other_info popup">
+                      <img onclick="other_profile(event);" class="other_photo" src=`+url+`></img>
+                      <div class="other_name">`+data.val().name+`</div>
+                      <div class="popuptext" id="myPopup"></div>
+                    </div>`;
+                  // message
+                  if(send_message == "!/!/!Good!/!/!")
+                    total_message[total_message.length] = 
+                    `<div id="other_good">
+                        <img width="70" src="./img/good_blue.jpg"></img>
+                      </div>`;
+                  else
+                    total_message[total_message.length] = '<div class="other">'+ send_message +'</div>';
+                  
+                  content.html(total_message.join(''));
+                  document.getElementById("content").scrollTop = document.getElementById("content").scrollHeight - document.getElementById("content").clientHeight;
+                }).catch(error => {
+                  alert(error.message); 
+                });
+
+                // Notification - other's message
+                if (Notification && Notification.permission === "granted") {
+                  if(send_message == "!/!/!Good!/!/!")
+                    var n = new Notification(data.val().name+" sent a like");
+                  else
+                    var n = new Notification(data.val().name+" sent a message: "+send_message);
+                }
+              });
+            } 
+          }
+        }
+      }
+      else { // not open the chatroom - notification
+          if(data.hasChild("member")) {
+            // Notification - add
+            if (Notification && Notification.permission === "granted") {
+              var n = new Notification(data.val().member+" have been added to "+data.ref.parent.key);
+            }
+          }
+          else {
+            //replace <, >, &
+            var send_message = data.val().message.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g, '&amp;');
+            
+            if(data.val().name != name.html()) { //left
+              // Notification - other's message
+              if (Notification && Notification.permission === "granted") {
+                if(send_message == "!/!/!Good!/!/!")
+                  var n = new Notification(data.val().name+" sent a like");
+                else
+                  var n = new Notification(data.val().name+" sent a message: "+send_message);
+              }
+            } 
+          }
+        }
     });
   })
 }
 
 function addNewMember() {
   var new_email = prompt("Email", "");
-  var database = firebase.database().ref('users/');
   var find = 0;
-  database.once('value', snapshot => {
+  firebase.database().ref('users/').once('value', snapshot => {
     for(var n in snapshot.val()) {
       if(snapshot.child(n).child("email").val() == new_email) {
-        find = 1;
-        firebase.database().ref('users/' + n + "/" + cur_room).set({
-          room_name: cur_room,
-        });
-        break;
+        if(snapshot.child(n).hasChild(cur_room)) // in the chatroom
+          find = -1;
+        else {
+          find = 1;
+          firebase.database().ref('users/' + n + "/" + cur_room).set({ // add room in user
+            room_name: cur_room,
+          });
+          firebase.database().ref('content/' + cur_room).push({ //add member message
+            member: n
+          })
+          break;
+        }
       }
     }
   }).then(() => { 
-    if(find)
+    if(find == 1)
       alert("Add Successfully!");
-    else
+    else if(find == -1)
+      alert("The user has been added!");
+    else 
       alert("Cannot find the user!");
   });
+}
+
+function send(value) {
+  if(value == "Enter") {
+    sendMessage();
+  }
 }
 
 function sendMessage() {
   var name = $("#name");
   var message = $("#message");
 
+  if(message.val() != "") {
+    firebase.database().ref('content/' + cur_room).push({
+      name: name.html(),
+      message : message.val(),
+    });
+    message.val("");
+  }
+}
+
+function sendGood() {
+  console.log("good");
+  var name = $("#name");
+
   firebase.database().ref('content/' + cur_room).push({
     name: name.html(),
-    message : message.val(),
+    message : "!/!/!Good!/!/!",    
   });
-  message.val("");
 }
 
 function uploadPhoto(th) {

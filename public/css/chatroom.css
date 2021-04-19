@@ -1,3 +1,7 @@
+html{
+  overflow: hidden;
+}
+
 #main{
   width: 100%;
   display: flex;
@@ -5,14 +9,15 @@
   justify-content: flex-start;
   padding-top: 56px;
   height: 100vh;
+  overflow-y: visible;
 }
 
 #left{
+  font-family: sans-serif;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   background-color: #6a6a6a;
-  padding: 2%;
   width: 25%;
 }
 
@@ -27,7 +32,7 @@
 #photo{
   width: 70px;
   height: 70px;
-  margin: 5px;
+  margin: 25px 20px 5px 20px;
   border-radius: 100%;
 }
 
@@ -52,51 +57,62 @@
 }
 
 #name{
-  font-size: 24px;
+  font-size: 22px;
+  font-weight: bold;
+  margin: 10px 20px 8px 20px;
 }
 
 #email{
   font-size: 12px;
+  margin: 8px 20px 20px 20px;
 }
 
 #btn1{ /* Create Private Chatroom */
-  padding: 5px;
-  background: #2c295e;
+  padding: 10px;
+  background: #6a6a6a;
   color: white;
   font-size: 16px;
   text-align: center;
-  border: none;
+  border-top-style:solid;
+  border-bottom-style:solid;
+  border-left-style:none;
+  border-right-style:none;
   box-shadow: none;
-  margin: 10px;
 }
 
 #btn1:hover {
-  background: #07015a;
+  background: #8d8d8d;
+}
+
+#btn1:focus{
+  outline: none;
 }
 
 #mychatroom{
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 #roombtn{
-  padding: 5px;
-  background: #c5c5c5;
+  padding: 10px;
+  background: #6a6a6a;
   color: white;
   font-size: 18px;
   text-align: center;
-  border: none;
+  border-top-style:none;
+  border-bottom-style:solid;
+  border-left-style:none;
+  border-right-style:none;
   box-shadow: none;
 }
 
 #roombtn:hover {
-  background: #999999;
+  background: #8d8d8d;
 }
 
 #roombtn:focus {
-  border: black 2px solid;
   outline: none;
 }
 
@@ -109,7 +125,6 @@
 
 .hide{
   visibility: hidden;
-  /*display:none;*/
 }
 
 #top{
@@ -123,12 +138,12 @@
 }
 
 #addBtn{
-  padding: 5px 20px;
+  padding: 0px 8px;
   background: #757575;
   color: white;
-  font-size: 14px;
   text-align: center;
   border: none;
+  border-radius: 5px;
   box-shadow: none;
   margin: 10px;
 }
@@ -147,9 +162,17 @@
   padding: 1%;
 }
 
+@keyframes left-right{
+  0%{
+    left:0%;
+  }
+  100%{
+    left:100%;
+  }
+}
+
 #start{
   font-size: 40px;
-  /*align-self: center;*/
   padding: 20px;
   position:relative;
   animation-name: left-right;
@@ -157,22 +180,56 @@
   animation-iteration-count:infinite;
 }
 
-@keyframes left-right{
-  from{
-      left:0%;
+@keyframes large{
+  0%{
+    transform: scale(0); 
   }
-  to{
-      left:100%;
+  10%{
+    transform: scale(0.1);
+  }
+  20%{
+    transform: scale(0.2);
+  }
+  30%{
+    transform: scale(0.3);
+  }
+  40%{
+    transform: scale(0.4);
+  }
+  50%{
+    transform: scale(0.5);
+  }
+  60%{
+    transform: scale(0.6);
+  }
+  70%{
+    transform: scale(0.7);
+  }
+  80%{
+    transform: scale(0.8);
+  }
+  90%{
+    transform: scale(0.9);
+  }
+  100%{
+    transform: scale(1);
   }
 }
 
-#bottom{
-  font-size: 14px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  padding: 10px;
-  align-items: center;
+#me_good{
+  align-self: flex-end;
+  animation-name: large;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: forwards;
+}
+
+#other_good{
+  align-self: flex-start;
+  animation-name: large;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: forwards;
 }
 
 .me{
@@ -196,18 +253,29 @@
   max-width: 50%;
 }
 
+.member{ /* joined the chatroom */
+  background-color: rgb(196, 236, 247);
+  color: gray;
+  padding: 2px 8px;
+  margin: 10px;
+  border-radius: 10px;
+  align-self: center;
+  word-break: break-all;
+  max-width: 50%;
+  font-size: 14px;
+}
+
 .other_info{
   display: flex;
   flex-direction: row;
   align-self: flex-start;
 }
 
-.other_photo{
-  align-self: flex-start;
-  width: 25px;
-  height: 25px;
-  margin: 0px 2px;
-  border-radius: 100%;
+#other_profile{
+  background-color: black;
+  color: white;
+  width:100px;
+  height:100px;
 }
 
 .popup {
@@ -233,14 +301,20 @@
 
 .popup .show {
   visibility: visible;
-  -webkit-animation: fadeIn 1s;
-  animation: fadeIn 1s;
 }
 
 .me_name{
   margin: 2px;
   align-self: flex-end;
   font-size: 12px;
+}
+
+.other_photo{
+  align-self: flex-start;
+  width: 25px;
+  height: 25px;
+  margin: 0px 2px;
+  border-radius: 100%;
 }
 
 .other_name{
@@ -253,12 +327,42 @@
   width: 70%;
 }
 
-#other_profile{
-  /*display: none;*/
-  background-color: black;
+#bottom{
+  font-size: 14px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 10px;
+  align-items: center;
+}
+
+#send{
+  background-color: #3b5998;
+  border: none;
+  opacity: 0.8;
+}
+
+#send:hover{
+  opacity: 1;
+}
+
+#send:focus{
+  outline: none;
+}
+
+#goodBtn{
+  background-color: #3b5998;
   color: white;
-  width:100px;
-  height:100px;
+  border: none;
+  opacity: 0.8;
+}
+
+#goodBtn:hover{
+  opacity: 1;
+}
+
+#goodBtn:focus{
+  outline: none;
 }
 
 @media (max-width: 767.98px) {
@@ -299,7 +403,6 @@
 
   #left.open {
     overflow-x: visible;
-    padding: 5%;
     width: 100%;
   }
   #right.Close {
@@ -309,5 +412,20 @@
   .popup .popuptext {
     left: 25%;
   }
+}
+
+::-webkit-scrollbar-track{
+	background-color: #afafaf;
+}
+
+::-webkit-scrollbar{
+	width: 5px;
+  height: 0px;
+	background-color: #afafaf;
+}
+
+::-webkit-scrollbar-thumb{
+	background-color: rgb(0, 0, 0);
+	border: none;
 }
 
