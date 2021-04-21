@@ -15,15 +15,18 @@ function init() {
 
       // photo
       firebase.database().ref('users/' + name.html()).once('value').then(snapshot => {
-        var photo = snapshot.val().photo;
-        if(photo != "user.jpg") //change
-          photo = name.html() + "/1.jpg";
-        firebase.storage().ref().child(photo).getDownloadURL().then(url => {
-          var img = document.getElementById('photo');
-          img.src = url;
-        }).catch(error => {
-          alert(error.message); 
-        });
+        if(snapshot.val().photo == "user.jpg") {
+          firebase.storage().ref().child("user.jpg").getDownloadURL().then(url => {
+            firebase.database().ref('users/' + name.html()).update({
+              photo: url
+            });
+            document.getElementById('photo').src = url;
+          }).catch(error => {
+            alert(error.message); 
+          });
+        }
+        else
+          document.getElementById('photo').src = snapshot.val().photo;
       });
 
       // my chatroom 
@@ -88,40 +91,34 @@ function createChatroom() { // when click the create button
 
 function other(childshot, send_message, total_message) { // once - other(left)
   return new Promise(resolve => {
-    firebase.database().ref("users/"+childshot.val().name).once('value').then(snapshot => {
-      var photo = snapshot.val().photo;
-      if(photo != "user.jpg")
-        photo = childshot.val().name + "/1.jpg";
-
-      firebase.storage().ref().child(photo).getDownloadURL().then(url => {
-        // name + photo
+    firebase.database().ref("users/" + childshot.val().name).once('value').then(snapshot => {
+      // photo + name
+      total_message[total_message.length] = 
+        `<div class="other_info popup">
+          <img onclick="other_profile(event);" class="other_photo" src=`+snapshot.val().photo+`></img>
+          <div class="other_name">`+childshot.val().name+`</div>
+          <div class="popuptext" id="myPopup"></div>
+        </div>`;
+          
+      //message
+      if(send_message == "!/!/!Good!/!/!") {
         total_message[total_message.length] = 
-         `<div class="other_info popup">
-            <img onclick="other_profile(event);" class="other_photo" src=`+url+`></img>
-            <div class="other_name">`+childshot.val().name+`</div>
-            <div class="popuptext" id="myPopup"></div>
+          `<div id="other_good">
+            <img width="70" src="./img/good_blue.jpg"></img>
           </div>`;
-        
-        //message
-        if(send_message == "!/!/!Good!/!/!") {
-          total_message[total_message.length] = 
-            `<div id="other_good">
-              <img width="70" src="./img/good_blue.jpg"></img>
-            </div>`;
-        }
-        else if(send_message == "!/!/!Heart!/!/!") {
-          total_message[total_message.length] = 
-            `<div id="other_heart">
-              <img width="70" src="./img/heart.png"></img>
-            </div>`;
-        }
-        else { // text
-          total_message[total_message.length] = '<div class="other">'+ send_message +'</div>';
-        }
-        resolve();
-      })
+      }
+      else if(send_message == "!/!/!Heart!/!/!") {
+        total_message[total_message.length] = 
+          `<div id="other_heart">
+            <img width="70" src="./img/heart.png"></img>
+          </div>`;
+      }
+      else { // text
+        total_message[total_message.length] = '<div class="other">'+ send_message +'</div>';
+      }
+      resolve();
     });
-  });
+  })
 }
 
 function first_message(snapshot, total_message) { // once
@@ -205,14 +202,14 @@ function chooseChatroom(n) {
               `<div class="member">`+ 
                 data.val().member +` joined the chatroom
               </div>`;
-                
-            content.html(total_message.join(''));
-            content.scrollTop(content.height()*10);
 
             // Notification - add
             if (Notification && Notification.permission === "granted") {
               var n = new Notification(data.val().member+" joined "+data.ref.parent.key);
             }
+
+            content.html(total_message.join(''));
+            content.scrollTop(content.height()*10);
           }
           else { // me(right) or other(left)
             //replace <, >, &
@@ -234,46 +231,35 @@ function chooseChatroom(n) {
               }
               else //text
                 total_message[total_message.length] = '<div class="me">'+ send_message +'</div>';
-
+              
               content.html(total_message.join(''));
               content.scrollTop(content.height()*10);
             }
             else { // other(left)
-              firebase.database().ref("users/"+data.val().name).once('value').then(snapshot => {
-                var photo = snapshot.val().photo;
-                if(photo != "user.jpg") 
-                  photo = data.val().name + "/1.jpg";
-
-                firebase.storage().ref().child(photo).getDownloadURL().then(url => {
-                  // name + photo
-                  total_message[total_message.length] = 
+              firebase.database().ref("users/" + data.val().name).once('value').then(snapshot => {
+                // name + photo
+                total_message[total_message.length] = 
                   `<div class="other_info popup">
-                      <img onclick="other_profile(event);" class="other_photo" src=`+url+`></img>
-                      <div class="other_name">`+data.val().name+`</div>
-                      <div class="popuptext" id="myPopup"></div>
-                    </div>`;
+                    <img onclick="other_profile(event);" class="other_photo" src=`+snapshot.val().photo+`></img>
+                    <div class="other_name">`+data.val().name+`</div>
+                    <div class="popuptext" id="myPopup"></div>
+                  </div>`;
                   
-                  // message
-                  if(send_message == "!/!/!Good!/!/!") {
-                    total_message[total_message.length] = 
+                // message
+                if(send_message == "!/!/!Good!/!/!") {
+                  total_message[total_message.length] = 
                     `<div id="other_good">
-                        <img width="70" src="./img/good_blue.jpg"></img>
-                      </div>`;
-                  }
-                  else if(send_message == "!/!/!Heart!/!/!") {
-                    total_message[total_message.length] = 
-                      `<div id="other_heart">
-                        <img width="70" src="./img/heart.png"></img>
-                      </div>`;
-                  }
-                  else // text
-                    total_message[total_message.length] = '<div class="other">'+ send_message +'</div>';
-                  
-                  content.html(total_message.join(''));
-                  content.scrollTop(content.height()*10);
-                }).catch(error => {
-                  alert(error.message); 
-                });
+                      <img width="70" src="./img/good_blue.jpg"></img>
+                    </div>`;
+                }
+                else if(send_message == "!/!/!Heart!/!/!") {
+                  total_message[total_message.length] = 
+                    `<div id="other_heart">
+                      <img width="70" src="./img/heart.png"></img>
+                    </div>`;
+                }
+                else // text
+                  total_message[total_message.length] = '<div class="other">'+ send_message +'</div>';
 
                 // Notification - other's message
                 if (Notification && Notification.permission === "granted") {
@@ -284,35 +270,38 @@ function chooseChatroom(n) {
                   else
                     var n = new Notification(data.val().name+" sent a message: "+send_message);
                 }
-              });
-            } 
+
+                content.html(total_message.join(''));
+                content.scrollTop(content.height()*10);
+              }); 
+            }
           }
         }
       }
       else { // not open the chatroom - notification
-          if(data.hasChild("member")) {
-            // Notification - add
-            if (Notification && Notification.permission === "granted") {
-              var n = new Notification(data.val().member+" joined "+data.ref.parent.key);
-            }
-          }
-          else {
-            //replace <, >, &
-            var send_message = data.val().message.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            
-            if(data.val().name != name.html()) { //left
-              // Notification - other's message
-              if (Notification && Notification.permission === "granted") {
-                if(send_message == "!/!/!Good!/!/!")
-                  var n = new Notification(data.val().name+" sent a like");
-                else if(send_message == "!/!/!Heart!/!/!")
-                  var n = new Notification(data.val().name+" sent a heart");
-                else
-                  var n = new Notification(data.val().name+" sent a message: "+send_message);
-              }
-            } 
+        if(data.hasChild("member")) {
+          // Notification - add
+          if (Notification && Notification.permission === "granted") {
+            var n = new Notification(data.val().member+" joined "+data.ref.parent.key);
           }
         }
+        else {
+          //replace <, >, &
+          var send_message = data.val().message.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            
+          if(data.val().name != name.html()) { //left
+            // Notification - other's message
+            if (Notification && Notification.permission === "granted") {
+              if(send_message == "!/!/!Good!/!/!")
+                var n = new Notification(data.val().name+" sent a like");
+              else if(send_message == "!/!/!Heart!/!/!")
+                var n = new Notification(data.val().name+" sent a heart");
+              else
+                var n = new Notification(data.val().name+" sent a message: "+send_message);
+            }
+          } 
+        }
+      }
     });
   })
 }
@@ -386,22 +375,21 @@ function sendGood() {
 
 function uploadPhoto(th) {
   var file = th.files[0];
-  var photo = $("#name").html() + '/1.jpg';
+  var name = $("#name");
+  var photo = name.html() + '/1.jpg';
 
   firebase.storage().ref().child(photo).put(file).then(() => { // put file at photo
     firebase.storage().ref().child(photo).getDownloadURL().then(url => { // take img on profile
-      var img = document.getElementById('photo');
-      img.src = url;
+      document.getElementById('photo').src = url;
+      firebase.database().ref('users/' + name.html()).update({
+        photo: url
+      })
     }).catch(error => {
       alert(error.message); 
     });
   }).catch(error => {
     alert(error.message); 
   });
-
-  firebase.database().ref('users/' + $("#name").html()).update({ //change photo 
-    photo: "1.jpg"
-  })
 }
 
 function other_profile(event) {

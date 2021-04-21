@@ -11,7 +11,8 @@ function writeUserData() {
       name: name.val(),
       email: email.val(),
       password: password.val(),
-      photo: "user.jpg"
+      photo: "user.jpg",
+      boi: "Hi!"
     }).then(() => { 
       alert("Successfully Signed Up!");
       window.location.href = "./sign_in.html";
