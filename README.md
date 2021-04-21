@@ -36,7 +36,7 @@
 3. Sign in with Google : 選擇Google帳戶登入。
 4. RWD : 
 5. Create private chatrooms : 點擊按鈕後，輸入聊天室名稱，就可以有新的聊天室。目前所加入的聊天室會顯示在頁面左方，點擊便可進入聊天。
-6. Send messages : 在輸入框輸入訊息後，點![](./public/img/send.png =20x20)或按Enter鍵傳送訊息。
+6. Send messages : 在輸入框輸入訊息後，點<img src="public/img/send.png" width="20"/>或按Enter鍵傳送訊息。
 7. history message : 點擊頁面左方的聊天室名稱，即可進入該聊天室並載入歷史訊息。
 8. Chrome notification : 
 9. Deal with messages when sending html code :
