@@ -24,6 +24,8 @@
 [https://software-studio-d7a04.web.app/index.html](https://software-studio-d7a04.web.app/index.html)
 
 ## Website Detail Description
+<img src="public/img/chatroom.png" width="800"/>
+
 此project為網頁聊天室，進入網站後，若還沒登入，則點選上方的Account -> Sign in進入登入頁面，若還沒有帳號，則先點Sign up。
 
 登入後即可創建聊天室、加入新成員聊天。
