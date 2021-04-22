@@ -52,6 +52,10 @@ function SignInWithGoogle() {
           window.location.href = "./index.html";
         })
       }
+      else {
+        alert("Successfully Signed In!");
+        window.location.href = "./index.html";
+      }
     });   
   }).catch(error => {
     alert(error.message); 
